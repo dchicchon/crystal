@@ -3,6 +3,7 @@ import { Menu } from './Menu';
 import { Crystal } from './Crystal';
 
 interface Config {
+  displayRadius: boolean;
   displayPoints: boolean;
   displayBorder: boolean;
   pause: boolean;
@@ -20,21 +21,23 @@ interface Config {
   blue: number;
 }
 
+// we can make the menu out of this config too
 const defaultConfig: Config = {
-  displayPoints: false,
-  displayBorder: false,
+  displayRadius: true,
+  displayPoints: true,
+  displayBorder: true,
   pause: false,
   particleSpeed: 0.2,
-  particleNumber: 25,
+  particleNumber: 5,
   distance: 200,
   linkRadius: 250,
-  backgroundColor: new Color(255, 255, 225, 1),
   bRed: 255,
   bGreen: 255,
   bBlue: 225,
   red: 210,
   green: 119,
   blue: 95,
+  backgroundColor: new Color(255, 255, 225, 1),
   color: new Color(210, 119, 95, 1),
 };
 
