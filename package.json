@@ -5,15 +5,23 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmitOnError false && vite build",
+    "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
+    "3d-core-raub": "^4.3.0",
+    "gl": "^8.1.6",
+    "glfw": "^0.0.0",
+    "glfw-raub": "^5.7.0",
+    "image-raub": "^4.3.0",
     "nanoid": "^5.1.0",
+    "p5": "^1.11.3",
+    "p5js": "^1.2.18",
     "q5xts": "^0.0.18",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "webgl-raub": "^4.2.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",

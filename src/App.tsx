@@ -5,7 +5,6 @@ import './App.css';
 function App() {
   useEffect(() => {
     const drawing = new Drawing();
-    window.drawing = drawing;
     return () => {
       drawing.dispose();
     };

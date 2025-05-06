@@ -1,6 +1,5 @@
 // implement quadtree to check points
-import { Particle } from './Crystal';
-
+import { Particle } from './Particle';
 class Rectangle {
   x: number;
   y: number;
@@ -86,6 +85,5 @@ export class QuadTree {
     this.southeast?.insert(point);
     this.southwest?.insert(point);
   }
-
-  query(range, found) {}
+  // query(range, found) {}
 }

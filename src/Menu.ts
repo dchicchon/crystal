@@ -1,5 +1,5 @@
 import { Vector } from 'q5xts';
-import { Drawing } from './Drawing';
+import { ConfigType, Drawing } from './Drawing';
 
 export class Menu {
   sketch: Drawing;
@@ -10,61 +10,89 @@ export class Menu {
     this.sketch = sketch;
     this.pos = this.sketch.createVector(25, 25);
     this.elm = document.createElement('div');
-
-    this.elm.style.backgroundColor = '#d9e0e5';
+    this.elm.style.display = this.sketch.config.displayMenu.value ? 'flex' : 'none';
+    this.elm.style.backgroundColor = this.sketch.getBackground().toString();
+    this.elm.style.padding = '10px';
     this.elm.style.width = '200px';
     this.elm.style.position = 'absolute';
+    this.elm.style.flexDirection = 'column';
+    this.elm.style.gap = '5px';
     this.elm.style.top = '0';
     this.elm.style.left = '0';
     this.sketch.parent.appendChild(this.elm);
-
-    Object.keys(this.sketch.config).forEach((key) => {
-      this.createElement(key);
-    });
+    this.createElements();
   }
 
-  createElement(key: string) {
-    const configItem = this.sketch.config[key];
-    const container = document.createElement('div');
-    if (typeof configItem.value === 'number') {
-      const elm = document.createElement('input');
-      elm.type = 'range';
-      elm.min = String(configItem.min);
-      elm.max = String(configItem.max);
-      elm.step = String(configItem.step);
-      elm.value = String(configItem.value);
-      elm.onchange = (e) => {
-        const originalVal = Number(this.sketch.config[key].value);
-        const value = parseFloat(e.target!.value);
-        this.sketch.config[key].value = value;
-        if (key === 'particleSpeed') {
-          this.sketch.crystal?.updateSpeed();
-        } else if (key === 'particleNumber') {
-          const diff = originalVal - value;
-          if (diff > 0) {
-            for (let i = 0; i < diff; i++) {
-              this.sketch.crystal?.removeParticle();
+  createElements() {
+    Object.keys(this.sketch.config).forEach((key) => {
+      const configItem = this.sketch.config[key as keyof ConfigType];
+      const container = document.createElement('div');
+      if (typeof configItem.value === 'number') {
+        const elm = document.createElement('input');
+        const output = document.createElement('label');
+        output.innerHTML = String(configItem.value);
+        output.htmlFor = key;
+        elm.name = key;
+        elm.type = 'range';
+        elm.min = String(configItem.min);
+        elm.max = String(configItem.max);
+        elm.step = String(configItem.step);
+        elm.value = String(configItem.value);
+        elm.onchange = (e) => {
+          const originalVal = Number(configItem.value);
+          // @ts-expect-error value exists!
+          const value = parseFloat(e.target!.value);
+          this.sketch.config[key as keyof ConfigType].value = value;
+          output.innerHTML = String(configItem.value);
+          if (key === 'particleSpeed') {
+            for (const crystal of this.sketch.crystals) {
+              crystal.updateSpeed();
             }
-          } else {
-            for (let i = 0; i < Math.abs(diff); i++) {
-              this.sketch.crystal?.addParticle();
+          } else if (key === 'particleNumber') {
+            const diff = originalVal - value;
+            if (diff > 0) {
+              for (let i = 0; i < diff; i++) {
+                for (const crystal of this.sketch.crystals) {
+                  crystal.removeParticle();
+                }
+              }
+            } else {
+              for (let i = 0; i < Math.abs(diff); i++) {
+                for (const crystal of this.sketch.crystals) {
+                  crystal.addParticle();
+                }
+              }
             }
           }
-        }
-      };
-      const label = document.createElement('span');
-      label.textContent = key;
-      container.appendChild(label);
-      container.appendChild(elm);
-    } else if (typeof configItem.value === 'boolean') {
-      const elm = document.createElement('button');
-      elm.textContent = key;
-      elm.value = String(configItem.value);
-      elm.onclick = () => {
-        this.sketch.config[key].value = !this.sketch.config[key].value;
-      };
-      container.appendChild(elm);
-    }
-    this.elm.appendChild(container);
+        };
+        const label = document.createElement('span');
+        label.textContent = key;
+        container.appendChild(label);
+        container.appendChild(elm);
+        container.appendChild(output);
+      } else if (typeof configItem.value === 'boolean') {
+        const elm = document.createElement('button');
+        elm.style.padding = '5px';
+        elm.style.background = this.sketch.config[key as keyof ConfigType].value
+          ? this.sketch.getStroke().toString()
+          : this.sketch.getBackground().toString();
+        elm.style.border = '1px solid';
+        elm.style.cursor = 'pointer';
+        elm.style.borderRadius = '5px';
+        elm.textContent = key;
+        elm.value = String(configItem.value);
+        elm.onclick = () => {
+          this.sketch.config[key as keyof ConfigType].value =
+            !this.sketch.config[key as keyof ConfigType].value;
+
+          // also update the background color
+          elm.style.background = this.sketch.config[key as keyof ConfigType].value
+            ? this.sketch.getStroke().toString()
+            : this.sketch.getBackground().toString();
+        };
+        container.appendChild(elm);
+      }
+      this.elm.appendChild(container);
+    });
   }
 }
