@@ -140,13 +140,8 @@ export class Crystal {
   drawParticles() {
     this.sketch.push();
     Object.keys(this.particles).forEach((key) => {
-      const point = this.particles[key];
-      this.sketch.stroke(this.sketch.getBackground());
-      this.sketch.strokeWeight(10);
-      this.sketch.point(point.pos);
-      this.sketch.stroke(this.color);
-      this.sketch.strokeWeight(5);
-      this.sketch.point(point.pos);
+      const particle = this.particles[key];
+      particle.draw(this);
     });
     this.sketch.pop();
   }
@@ -162,7 +157,6 @@ export class Crystal {
     });
   }
 
-  // TODO: Use quad tree for faster search
   buildLinks() {
     for (const key in this.particles) {
       const particle = this.particles[key];
@@ -207,6 +201,7 @@ export class Crystal {
           .join('|');
         if (this.edges[id]) continue;
         const edgePoints = this.sortPoints(foundPoints);
+        // pass it a copy?
         this.edges[id] = new Edge(edgePoints, this.color);
       }
     }
@@ -214,30 +209,23 @@ export class Crystal {
 
   drawEdges() {
     if (Object.keys(this.edges).length === 0) return;
-    // draw it in slowly?
     for (const key in this.edges) {
       this.sketch.push();
       const edge = this.edges[key];
-      this.sketch.strokeWeight(5);
-      this.sketch.noStroke();
-      this.sketch.fill(this.color);
-      this.sketch.beginShape();
-      edge.points.forEach((point) => {
-        this.sketch.vertex(point.pos.x, point.pos.y);
-      });
-      this.sketch.endShape(this.sketch.CLOSE);
-      this.sketch.pop();
-      this.sketch.push();
-      this.sketch.strokeWeight(5);
-      this.sketch.stroke(this.sketch.getBackground());
-      edge.points.forEach((point, i) => {
-        const nextPoint = edge.points[(i + 1) % edge.points.length];
-        this.sketch.line(point.pos.x, point.pos.y, nextPoint.pos.x, nextPoint.pos.y);
-      });
+      edge.draw(this.sketch);
       this.sketch.pop();
     }
-    // maybe don't do this over and over again?
-    this.edges = {};
+  }
+
+  cleanupEdges() {
+    for (const id in this.edges) {
+      const edge = this.edges[id];
+      if (!edge.pointsConnected()) {
+        delete this.edges[id];
+      }
+    }
+    // if an edges points are no longer connected,
+    // delete the edge
   }
 
   menuFunctions() {
@@ -274,11 +262,11 @@ export class Crystal {
   }
 
   draw() {
+    this.cleanupEdges();
     this.buildLinks();
     this.buildEdges();
     this.menuFunctions();
-    this.mouseInput();
-    if (this.sketch.config.pause.value) return;
+    // this.mouseInput();
     this.movePoints();
   }
   // TODO: how can i implement this in future?

@@ -1,5 +1,6 @@
 import { Vector } from 'q5xts';
 import { nanoid } from 'nanoid';
+import { Crystal } from './Crystal';
 
 export class Particle {
   id: string;
@@ -19,6 +20,15 @@ export class Particle {
     this.direction = direction;
     this.velocity = velocity;
     this.velocity.mult(direction);
+  }
+
+  draw(crystal: Crystal) {
+    crystal.sketch.stroke(crystal.sketch.getBackground());
+    crystal.sketch.strokeWeight(10);
+    crystal.sketch.point(this.pos);
+    crystal.sketch.stroke(crystal.color);
+    crystal.sketch.strokeWeight(5);
+    crystal.sketch.point(this.pos);
   }
 
   move() {

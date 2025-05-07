@@ -61,7 +61,7 @@ const defaultConfig: ConfigType = {
     max: 1,
   },
   particleNumber: {
-    value: 15,
+    value: 10,
     min: 1,
     max: 25,
     step: 1,
@@ -92,7 +92,7 @@ export class Drawing extends Q5 {
     this.config = defaultConfig;
 
     // divide evenly among the page?
-    const pos1 = this.createVector(this.width / 4, this.height / 2);
+    const pos1 = this.createVector((this.width / 4) * 1, this.height / 2);
     const pos2 = this.createVector((this.width / 4) * 2, this.height / 2);
     const pos3 = this.createVector((this.width / 4) * 3, this.height / 2);
     const crystal1 = this.initCrystal(pos1, color1);
@@ -113,6 +113,7 @@ export class Drawing extends Q5 {
       }
     };
     this.draw = () => {
+      if (this.config.pause.value) return;
       this.background(this.getBackground());
       for (const crystal of this.crystals) {
         crystal.draw();
