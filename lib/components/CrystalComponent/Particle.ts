@@ -1,4 +1,4 @@
-import { Vector } from 'q5xts';
+import { Color, Vector } from 'q5xts';
 import { nanoid } from 'nanoid';
 import { Crystal } from './Crystal';
 
@@ -23,12 +23,13 @@ export class Particle {
   }
 
   draw(crystal: Crystal) {
-    crystal.sketch.stroke(crystal.sketch.getBackground());
-    crystal.sketch.strokeWeight(10);
-    crystal.sketch.point(this.pos);
-    crystal.sketch.stroke(crystal.color);
-    crystal.sketch.strokeWeight(5);
-    crystal.sketch.point(this.pos);
+    const transparent = new Color(0, 0, 0, 0);
+    crystal.stroke(transparent);
+    crystal.strokeWeight(10);
+    crystal.point(this.pos);
+    crystal.stroke(crystal.colors.main);
+    crystal.strokeWeight(5);
+    crystal.point(this.pos);
   }
 
   move() {

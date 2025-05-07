@@ -1,16 +1,17 @@
-import { Color } from 'q5xts';
+import { Color, Q5 } from 'q5xts';
 import { Particle } from './Particle';
-import { Drawing } from './Drawing';
 
 export class Edge {
   color: Color;
+  bgColor: Color;
   points: Array<Particle>;
-  constructor(points: Array<Particle>, color: Color) {
+  constructor(points: Array<Particle>, color: Color, bgColor: Color) {
     this.points = points;
     this.color = new Color(color._r, color._g, color._b, 0);
+    this.bgColor = new Color(bgColor._r, bgColor._g, bgColor._b, 1);
   }
 
-  draw(sketch: Drawing) {
+  draw(sketch: Q5) {
     this.color._a += 0.05;
     sketch.push();
     sketch.strokeWeight(5);
@@ -24,7 +25,7 @@ export class Edge {
     sketch.pop();
     sketch.push();
     sketch.strokeWeight(5);
-    sketch.stroke(sketch.getBackground());
+    sketch.stroke(this.bgColor);
     this.points.forEach((point, i) => {
       const nextPoint = this.points[(i + 1) % this.points.length];
       sketch.line(point.pos.x, point.pos.y, nextPoint.pos.x, nextPoint.pos.y);
